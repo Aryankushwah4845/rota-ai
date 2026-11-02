@@ -19,7 +19,8 @@ rota-ai/
 │   └── rules/            # industry templates (restaurant, retail, care home)
 ├── tests/                # automated checks
 ├── output/               # generated rotas (not committed)
-├── run_rota.py           # builds the sample café's rota
+├── app.py                # the manager's web screen (Streamlit)
+├── run_rota.py           # builds the sample café's rota without the screen
 └── requirements.txt      # Python packages
 ```
 
@@ -28,15 +29,18 @@ rota-ai/
 ```
 python -m venv .venv
 .venv\Scripts\activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ## Run
 
 ```
-python run_rota.py        # saves the rota to output/rota.xlsx
-python -m pytest          # runs the automated checks
+python -m streamlit run app.py   # opens the manager's screen in your browser
+python run_rota.py               # saves the sample rota to output/rota.xlsx
+python -m pytest                 # runs the automated checks
 ```
+
+Press Ctrl+C in the terminal to stop the app. It only accepts connections from this computer.
 
 ## Roadmap
 

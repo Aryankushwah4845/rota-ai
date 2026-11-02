@@ -51,6 +51,31 @@ def test_duplicate_shift_is_rejected(tmp_path):
         load_shifts(path)
 
 
+def test_missing_column_is_named(tmp_path):
+    path = write_csv(tmp_path, "name,role\nKim,barista\n")
+    with pytest.raises(ValueError, match="contracted_hours, unavailable_days"):
+        load_staff(path)
+
+
+def test_row_too_short_is_explained(tmp_path):
+    path = write_csv(tmp_path, STAFF_HEADER + "Kim,barista\n")
+    with pytest.raises(ValueError, match="contracted_hours must be a whole number"):
+        load_staff(path)
+
+
+@pytest.mark.parametrize("hours", ["forty", "-8", "37.5", ""])
+def test_bad_contracted_hours_are_rejected(tmp_path, hours):
+    path = write_csv(tmp_path, STAFF_HEADER + f"Kim,barista,{hours},\n")
+    with pytest.raises(ValueError, match="Kim: contracted_hours must be a whole number"):
+        load_staff(path)
+
+
+def test_shift_hour_past_midnight_is_rejected(tmp_path):
+    path = write_csv(tmp_path, SHIFTS_HEADER + "Mon,Morning,7,25,1,0,1\n")
+    with pytest.raises(ValueError, match="Mon Morning: end_hour must be a whole number from 0 to 24"):
+        load_shifts(path)
+
+
 @pytest.fixture(scope="module")
 def rota():
     return solve_rota(load_staff(SAMPLE / "staff.csv"), load_shifts(SAMPLE / "shifts.csv"))

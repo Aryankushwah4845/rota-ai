@@ -1,0 +1,12 @@
+# Staff data must stay on this machine, so:
+[server]
+# only this computer can open the app, not others on the same network
+address = "localhost"
+
+[browser]
+# don't send Streamlit usage statistics
+gatherUsageStats = false
+
+[client]
+# hide the "Deploy" button, which offers to publish the app online
+toolbarMode = "minimal"
