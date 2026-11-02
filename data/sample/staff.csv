@@ -1,0 +1,9 @@
+name,role,contracted_hours,unavailable_days
+Priya,supervisor,40,Sun
+Tomasz,supervisor,40,Mon
+Amara,supervisor,32,Wed;Thu
+Sam,barista,40,Tue
+Jordan,barista,40,Sat
+Riley,barista,32,Thu;Fri
+Lena,cashier,16,Mon
+Noor,cashier,16,Tue;Sun

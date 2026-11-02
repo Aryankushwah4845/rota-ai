@@ -1,0 +1,15 @@
+day,shift,start_hour,end_hour,barista,cashier,supervisor
+Mon,Morning,7,15,1,0,1
+Mon,Evening,15,23,1,0,1
+Tue,Morning,7,15,1,0,1
+Tue,Evening,15,23,1,0,1
+Wed,Morning,7,15,1,0,1
+Wed,Evening,15,23,1,0,1
+Thu,Morning,7,15,1,0,1
+Thu,Evening,15,23,1,0,1
+Fri,Morning,7,15,1,1,1
+Fri,Evening,15,23,1,1,1
+Sat,Morning,7,15,1,1,1
+Sat,Evening,15,23,1,1,1
+Sun,Morning,7,15,1,0,1
+Sun,Evening,15,23,1,0,1

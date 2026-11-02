@@ -2,6 +2,9 @@
 data/private/*
 !data/private/.gitkeep
 
+# Generated rotas contain staff names and schedules
+output/
+
 # Python
 __pycache__/
 *.py[cod]

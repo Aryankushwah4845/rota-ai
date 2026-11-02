@@ -18,6 +18,8 @@ rota-ai/
 │   ├── connectors/       # one per client system (CSV, APIs, ...)
 │   └── rules/            # industry templates (restaurant, retail, care home)
 ├── tests/                # automated checks
+├── output/               # generated rotas (not committed)
+├── run_rota.py           # builds the sample café's rota
 └── requirements.txt      # Python packages
 ```
 
@@ -27,6 +29,13 @@ rota-ai/
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
+```
+
+## Run
+
+```
+python run_rota.py        # saves the rota to output/rota.xlsx
+python -m pytest          # runs the automated checks
 ```
 
 ## Roadmap
