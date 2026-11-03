@@ -7,11 +7,17 @@ could be rostered on a day they can't work.
 
 import csv
 from collections.abc import Iterable
+from datetime import date, datetime
+from math import isfinite
 from pathlib import Path
 
 from rota_ai.engine.models import DAYS, ROLES, Shift, Staff
 
-STAFF_COLUMNS = ("name", "role", "contracted_hours", "unavailable_days")
+STAFF_COLUMNS = ("name", "role", "contracted_hours", "unavailable_days", "date_of_birth")
+# These can be left out of a file, or left blank for anyone they don't apply to.
+OPTIONAL_STAFF_COLUMNS = ("opted_out_48h", "sunday_opt_out", "hourly_rate")
+# Excel often rewrites dates as day/month/year when it saves a CSV.
+DATE_FORMATS = ("%Y-%m-%d", "%d/%m/%Y")
 SHIFT_COLUMNS = ("day", "shift", "start_hour", "end_hour", *ROLES)
 
 
@@ -32,6 +38,48 @@ def _whole_number(row: dict, column: str, where: str, maximum: int | None = None
         limit = f" from 0 to {maximum}" if maximum is not None else ""
         raise ValueError(f"{where}: {column} must be a whole number{limit}, but it is '{text}'")
     return int(text)
+
+
+def _date_of_birth(row: dict, name: str) -> date:
+    text = _cell(row, "date_of_birth")
+    if not text:
+        raise ValueError(
+            f"{name}: date_of_birth is needed to apply the right legal rules for their age. "
+            "Use a date like 2009-03-15"
+        )
+    for date_format in DATE_FORMATS:
+        try:
+            born = datetime.strptime(text, date_format).date()
+            break
+        except ValueError:
+            continue
+    else:
+        raise ValueError(f"{name}: date_of_birth must be a date like 2009-03-15, but it is '{text}'")
+    if born > date.today():
+        raise ValueError(f"{name}: date_of_birth is in the future: '{text}'")
+    return born
+
+
+def _true_or_false(row: dict, column: str, name: str) -> bool:
+    text = (row.get(column) or "").strip().lower()
+    if text in ("", "false", "no"):
+        return False
+    if text in ("true", "yes"):
+        return True
+    raise ValueError(f"{name}: {column} must be true or false, but it is '{text}'")
+
+
+def _hourly_rate(row: dict, name: str) -> float | None:
+    text = (row.get("hourly_rate") or "").strip().removeprefix("£")
+    if not text:
+        return None
+    try:
+        rate = float(text)
+    except ValueError:
+        rate = -1
+    if rate < 0 or not isfinite(rate):
+        raise ValueError(f"{name}: hourly_rate must be an amount like 12.71, but it is '{text}'")
+    return rate
 
 
 def staff_from_rows(rows: Iterable[dict]) -> list[Staff]:
@@ -55,7 +103,19 @@ def staff_from_rows(rows: Iterable[dict]) -> list[Staff]:
                 f"Use {', '.join(DAYS)}, separated by ';'"
             )
 
-        staff.append(Staff(name, role, _whole_number(row, "contracted_hours", name), unavailable))
+        contracted_hours = _whole_number(row, "contracted_hours", name)
+        staff.append(
+            Staff(
+                name,
+                role,
+                contracted_hours,
+                unavailable,
+                date_of_birth=_date_of_birth(row, name),
+                opted_out_48h=_true_or_false(row, "opted_out_48h", name),
+                sunday_opt_out=_true_or_false(row, "sunday_opt_out", name),
+                hourly_rate=_hourly_rate(row, name),
+            )
+        )
 
     names = [person.name for person in staff]
     if len(names) != len(set(names)):

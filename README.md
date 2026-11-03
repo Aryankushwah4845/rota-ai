@@ -16,7 +16,7 @@ rota-ai/
 ├── src/rota_ai/
 │   ├── engine/           # the core rota solver (same for every client)
 │   ├── connectors/       # one per client system (CSV, APIs, ...)
-│   └── rules/            # industry templates (restaurant, retail, care home)
+│   └── rules/            # legal rules by country (uk.py), with room for other countries
 ├── tests/                # automated checks
 ├── output/               # generated rotas (not committed)
 ├── app.py                # the manager's web screen (Streamlit)
@@ -36,11 +36,23 @@ python -m pip install -r requirements.txt
 
 ```
 python -m streamlit run app.py   # opens the manager's screen in your browser
-python run_rota.py               # saves the sample rota to output/rota.xlsx
+python run_rota.py               # saves next week's sample rota, e.g. output/rota_2026-11-09.xlsx
 python -m pytest                 # runs the automated checks
 ```
 
 Press Ctrl+C in the terminal to stop the app. It only accepts connections from this computer.
+
+## Your data
+
+The staff file needs `name`, `role`, `contracted_hours`, `unavailable_days` and `date_of_birth`
+(like `2009-03-15` or `15/03/2009`). These are optional: `opted_out_48h` and `sunday_opt_out`
+(true or false, blank means false) and `hourly_rate` (like `12.71`).
+
+## Legal rules
+
+All legal values live in [src/rota_ai/rules/uk.py](src/rota_ai/rules/uk.py), each beside the law it
+comes from. To support another country, add a file like it: the engine doesn't need to change.
+These rules are a guide, not legal advice. Check with an employment adviser.
 
 ## Roadmap
 
